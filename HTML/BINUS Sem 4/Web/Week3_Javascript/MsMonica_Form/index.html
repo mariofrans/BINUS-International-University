@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Javascript</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+<script type="text/javascript">
+	function onSubmit(){
+		if (document.getElementById("fname").value == "") {
+			alert("Please Fill in The Name");
+			document.getElementById("fname").focus();
+			return false;
+		}
+		if (document.getElementById("lname").value == "") {
+			alert("Please Fill in The Name");
+			return false;
+		}
+		if (document.getElementById("email").value == "") {
+			alert("Please Fill in The Email");
+			return false;
+		}
+		if (document.getElementById("phone").value == "") {
+			alert("Please Fill in The Phone");
+			return false;
+		}
+
+		if(isNaN(document.getElementById("phone").value)== true){
+			alert("Please Fill in The Correct Format of Phone Number");
+			return false;
+		}
+
+		if(document.getElementById("hobby").value == ""){
+			document.getElementById("error-message").innerHTML = "Please Choose The Hobby"
+			return false;
+		}
+
+		return true;
+
+	}
+
+	function onEmailAddressBlur() {
+		document.getElementById("email").value = document.getElementById("email").value + "@gmail.com"
+	}
+
+	function refreshHobby(){
+		var opt = ""
+		if ( document.getElementById("rdoMale").checked == true ) {
+			opt = "<option value=\"\">Select One</option>" + "<option value=\"soccer\">Soccer</option>" + "<option value=\"basketball\">BasketBall</option>" + "<option value=\"gym\">Gym</option>"
+		}else if (document.getElementById("rdoFemale").checked == true ){
+			opt = "<option value=\"\">Select One</option>" + "<option value=\"shopping\">Shopping</option>" + "<option value=\"cooking\">Cooking</option>" + "<option value=\"watch\">Watch K-Drama</option>"
+		}
+
+		document.getElementById("hobby").innerHTML= opt;
+	}
+
+</script>
+</head>
+<body>
+<div class="container-fluid">
+	<div class="row header">
+		<div class="col-md-12">
+			<form id="formRegis" action="doRegis.php" method="POST" onsubmit="return onSubmit()">
+				<div class="form-group">
+					<label for="exampleInputEmail1">First Name</label>
+					<input type="text" class="form-control" id="fname" >
+				</div>
+					<div class="form-group">
+					<label for="exampleInputEmail1">Last Name</label>
+					<input type="text" class="form-control" id="lname">
+				</div>
+				<div class="form-group">
+					<label for="exampleInputEmail1">Email address</label>
+					<input type="email" class="form-control" id="email"  placeholder="Enter email" onblur="onEmailAddressBlur()">
+				</div>
+				<div class="form-group">
+					<label for="exampleInputEmail1">Phone Number</label>
+					<input type="text" class="form-control" id="phone"  placeholder="+628xxxxx">
+				</div>
+				<div class="form-group">
+					<label for="exampleInputEmail1">Gender</label>
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="rdoGender" id="rdoMale" value="male" onchange="refreshHobby()">
+						<label class="form-check-label" for="rdoMale">
+						Male
+						</label>
+					</div>
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="rdoGender" id="rdoFemale" value="female" onchange="refreshHobby()">
+						<label class="form-check-label" for="rdoFemale">
+						Female
+						</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="exampleInputEmail1">Hobby</label>
+					<select class="custom-select" id="hobby">
+						<option value="">Select One</option>
+					</select>
+					<div  id="error-message" style="color:red">Example invalid custom select feedback</div>
+				</div>
+				<button type="submit" class="btn btn-primary">Submit</button>
+				<button type="reset" class="btn btn-primary">Reset</button>
+			</form>
+		</div>
+	</div>
+
+</div>
+
+</body>
+</html>

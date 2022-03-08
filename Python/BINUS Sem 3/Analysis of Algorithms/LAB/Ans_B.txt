@@ -1,0 +1,75 @@
+import 'dart:convert';
+import 'dart:io';
+
+Map<String, dynamic> getInput() {
+  List<String> read() {
+    return stdin.readLineSync(encoding: Encoding.getByName('utf-8')).split(' ');
+  }
+
+  Map<String, dynamic> input = Map();
+  try {
+    List<String> header = read();
+    input['N'] = int.parse(header[0]);
+    input['W'] = int.parse(header[1]);
+    input['weights'] = List<int>();
+    input['values'] = List<int>();
+
+    /// Checks condition N is in between 1 and 100
+    /// and W is in between 1 and 1,000,000,000
+    if(!(1 <= input['N'] && input['N'] <= 100) || !(1 <= input['W'] && input['W'] <= 1000000000)) return null;
+
+    for (int i = 0; i < input['N']; i++) {
+      List<String> body = read();
+      int weight = int.parse(body[0]);
+      int value = int.parse(body[1]);
+
+      /// Checks condition wi is in between 1 and 1,000,000,000
+      /// and vi is in between 1 and 10,000,000
+      if (!(1 <= weight && weight <= 1000000000) || !(1 <= value && value <= 10000000)) return null;
+
+      /// Checks condition {i|i = 1,2,3...N, w1 <= wi <= w1 + 3}
+      if (input['weights'].isNotEmpty && !((input['weights'][0] <= weight && weight <= input['weights'][0] + 3))) return null;
+      input['weights'].add(int.parse(body[0]));
+      input['values'].add(int.parse(body[1]));
+    }
+  } catch (e) {
+    return null;
+  }
+
+  return input;
+}
+
+
+int getKnapSack(int n, int w, List<int> weights, List<int> values, Map<String, int> records) {
+  if (n == 0 || w == 0) return 0;
+  if (records.containsKey('$n-$w') && records[['$n-$w']] != -1) return records['$n-$w'];
+  if (weights[n - 1] <= w) {
+    int valueL = values[n - 1] + getKnapSack(n - 1, w - weights[n - 1], weights, values, records);
+    int valueR = getKnapSack(n - 1, w, weights, values, records);
+    records['$n-$w'] = (valueL > valueR) ? valueL : valueR;
+  } else {
+    records['$n-$w'] = getKnapSack(n - 1, w, weights, values, records);
+  }
+  return records['$n-$w'];
+}
+
+void main() {
+  Map<String, dynamic> input = getInput();
+  if (input != null) {
+    /// Generate a list of records to record calculated values
+    Map<String, int> records = Map();
+
+    /// Get maximum value
+    int finalWeight = getKnapSack(
+      input['N'],
+      input['W'],
+      input['weights'],
+      input['values'],
+      records
+    );
+
+    print(finalWeight);
+  } else {
+    print('0');
+  }
+}

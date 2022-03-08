@@ -1,0 +1,6 @@
+Model,Train Accuracy,Test Accuracy
+Support Vector Classifier,72.2,74.96
+K-Nearest Neighbor,70.1,51.56
+Gaussian Naive Bayes,78.47,80.63
+Decision Tree Classifier,99.94,75.26
+MLP Classifier (Neural Network),66.96,66.92

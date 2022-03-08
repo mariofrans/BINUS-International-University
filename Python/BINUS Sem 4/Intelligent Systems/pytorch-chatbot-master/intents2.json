@@ -1,0 +1,18 @@
+{"intents": 
+    [
+        {"tag": "greetings",
+            "patterns": ["hello", "hey", "hi", "greetings", "what's up?", "how is it going?"],
+            "responses": ["hello", "hey!", "what can i do for you?"]
+        },
+    
+        {"tag": "goodbye",
+            "patterns": ["goodbye", "see you later", "i'm leaving", "bye", "have a nice day", "i gotta go"],
+            "responses": ["bye", "have a nice day", "hope to see you soon"]
+        },
+    
+        {"tag": "name",
+            "patterns": ["what is your name?", "who are you?", "what should i call you?", "can you tell me your name?"],
+            "responses": ["i am Lily", "you can call me Lily", "i am a neural assistant for Mario, Lukman, Sunny, and Naufaldi"]
+        }
+    ]
+    }

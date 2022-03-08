@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <title>Babylon.js sample code</title>
+
+        <!-- Babylon.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+        <script src="https://preview.babylonjs.com/ammo.js"></script>
+        <script src="https://preview.babylonjs.com/cannon.js"></script>
+        <script src="https://preview.babylonjs.com/Oimo.js"></script>
+        <script src="https://preview.babylonjs.com/earcut.min.js"></script>
+        <script src="https://preview.babylonjs.com/babylon.js"></script>
+        <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+        <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+        <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+        <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+        <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+        <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+        </style>
+    </head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+        var canvas = document.getElementById("renderCanvas");
+
+        var engine = null;
+        var scene = null;
+        var sceneToRender = null;
+        var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: false}); };
+        // You have to create a function called createScene. This function must return a BABYLON.Scene object
+        // You can reference the following variables: scene, canvas
+        // You must at least define a camera
+        
+        var car1, car2;
+
+        var createScene = function () {
+            const scene = new BABYLON.Scene(this.engine);
+            this.camera = new BABYLON.ArcRotateCamera("Camera", 0, 1.4 , 38, BABYLON.Vector3(30,15,0), scene);
+            this.camera.attachControl(canvas, true);
+            this.light = new BABYLON.DirectionalLight("dir02", new BABYLON.Vector3(10, -20, 0), scene);
+            this.light.intensity = 1;
+        
+            // var reshM = new BABYLON.StandardMaterial("reshM", scene);
+        	// reshM.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/Hriz256/car/master/src/assets/texture/resh.png", scene);
+        
+            var shadowGenerator = new BABYLON.CascadedShadowGenerator(1024, light);
+            shadowGenerator.usePercentageCloserFiltering = true;
+            shadowGenerator.lambda = 0.8;
+        
+            // Playground
+            var ground = BABYLON.Mesh.CreateBox("Ground", 1, scene);
+            ground.scaling = new BABYLON.Vector3(100, 1, 100);
+            ground.position.y = -0.5;
+            ground.checkCollisions = true;
+        
+            var groundMat = new BABYLON.StandardMaterial("groundMat", scene);
+            groundMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+            groundMat.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            groundMat.backFaceCulling = false;
+            ground.material = groundMat;
+            ground.receiveShadows = true;
+        
+            var car1, car2;
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/Hriz256/car/master/src/assets/", "car.obj", scene, function (newMeshes) {
+                car1 = new BABYLON.Mesh("car1", scene);
+                car1.position = new BABYLON.Vector3(0, 0, 15);
+                car1.rotation.x = Math.PI / -2;
+                car1.rotation.y = Math.PI / -2;
+                car1.scaling = new BABYLON.Vector3(1, 1, 1).scale(0.1);
+        
+            
+                newMeshes.forEach(i => {
+                    i.parent = car1;
+                    shadowGenerator.getShadowMap().renderList.push(i);
+                });
+               
+            });
+        
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/Hriz256/car/master/src/assets/", "car.obj", scene, function (newMeshes) {
+                car2 = new BABYLON.Mesh("car2", scene);
+                car2.position = new BABYLON.Vector3(15, 0, 0);
+                car2.rotation.x = Math.PI / -2;
+                car2.rotation.y = Math.PI / -2;
+                car2.scaling = new BABYLON.Vector3(1, 1, 1).scale(0.1);
+        
+                // const pivot = new BABYLON.Mesh("pivot", scene); //current centre of rotation
+                // pivot.position.x = -7;
+                // car.parent = pivot;
+        
+                newMeshes.forEach(i => {
+                    i.parent = car2;
+                    shadowGenerator.getShadowMap().renderList.push(i);
+                });
+        
+            });
+        
+            const degree = 1;
+            const v1 = new BABYLON.Vector3(Math.cos(degree * Math.PI / 180), 0, Math.sin(degree * Math.PI / 180));
+            const v2 = new BABYLON.Vector3(0, 1, 0);
+            const v3 = new BABYLON.Vector3(-Math.sin(degree * Math.PI / 180), 0, Math.cos(degree * Math.PI / 180));
+        
+            const callback = function () {
+        
+                
+                let x = BABYLON.Vector3.Dot(v1, car1.position)
+                let y = BABYLON.Vector3.Dot(v2, car1.position)
+                let z = BABYLON.Vector3.Dot(v3, car1.position)
+        
+                car1.position.x = x
+                car1.position.y = y
+                car1.position.z = z
+        
+                x = BABYLON.Vector3.Dot(v1, car2.position)
+                y = BABYLON.Vector3.Dot(v2, car2.position)
+                z = BABYLON.Vector3.Dot(v3, car2.position)
+        
+                car2.position.x = x
+                car2.position.y = y
+                car2.position.z = z
+        
+            }
+        
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        
+            var panel = new BABYLON.GUI.StackPanel();
+            panel.width = "220px";
+            panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+            panel.top = -50;
+            advancedTexture.addControl(panel);
+        
+            var button = BABYLON.GUI.Button.CreateSimpleButton("but", "Click Me");
+            button.position
+            button.width = 0.2;
+            button.height = "40px";
+            button.color = "white";
+            advancedTexture.addControl(button);
+            panel.addControl(button); 
+            
+            button.onPointerClickObservable.add(() => {
+                scene.registerBeforeRender(callback);
+            });
+        
+            scene.registerBeforeRender(function () {
+                
+                    // console.log("hello");
+                    if (Math.abs(car1.position.z) < 0.0001) {
+                        scene.onBeforeRenderObservable.removeCallback(callback);
+                    }
+                
+            })
+        
+            scene.registerAfterRender(function(){
+                
+                if(car1!= null){
+                    car1.rotation.y +=0.01;
+                    car2.rotation.y+=0.01;
+                }
+                
+            })
+        
+            var showAxis = function (size) {
+                var makeTextPlane = function (text, color, size) {
+                    var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
+                    dynamicTexture.hasAlpha = true;
+                    dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
+                    var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
+                    plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
+                    plane.material.backFaceCulling = false;
+                    plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+                    plane.material.diffuseTexture = dynamicTexture;
+                    return plane;
+                };
+        
+                var axisX = BABYLON.Mesh.CreateLines("axisX", [
+                    new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
+                    new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+                ], scene);
+                axisX.color = new BABYLON.Color3(1, 0, 0);
+                var xChar = makeTextPlane("X", "red", size / 10);
+                xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+                var axisY = BABYLON.Mesh.CreateLines("axisY", [
+                    new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+                    new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
+                ], scene);
+                axisY.color = new BABYLON.Color3(0, 1, 0);
+                var yChar = makeTextPlane("Y", "green", size / 10);
+                yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+                var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+                    new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
+                    new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
+                ], scene);
+                axisZ.color = new BABYLON.Color3(0, 0, 1);
+                var zChar = makeTextPlane("Z", "blue", size / 10);
+                zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+            };
+        
+            showAxis(40);
+        
+            return scene;
+        }
+                window.initFunction = async function() {
+                    
+                    
+                    var asyncEngineCreation = async function() {
+                        try {
+                        return createDefaultEngine();
+                        } catch(e) {
+                        console.log("the available createEngine function failed. Creating the default engine instead");
+                        return createDefaultEngine();
+                        }
+                    }
+
+                    window.engine = await asyncEngineCreation();
+        if (!engine) throw 'engine should not be null.';
+        window.scene = createScene();};
+        initFunction().then(() => {sceneToRender = scene        
+            engine.runRenderLoop(function () {
+                if (sceneToRender && sceneToRender.activeCamera) {
+                    sceneToRender.render();
+                }
+            });
+        });
+
+        // Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>

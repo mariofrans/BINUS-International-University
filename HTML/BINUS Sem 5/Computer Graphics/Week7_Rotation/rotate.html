@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Babylon Template</title>
+
+    <style>
+        html,
+        body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+        
+        #bigButton {
+            position: absolute;
+            color: white;
+            font-size: 66px;
+            top: 30%;
+            right: 20%;
+            cursor: pointer;
+        }
+        
+        #bigButton:hover {
+            color: black;
+        }
+        
+        #inputBox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer"
+    />
+</head>
+
+<body>
+
+    <div id="bigButton">
+        <i class="fas fa-angle-double-right"></i>
+    </div>
+
+    <div id="inputBox">
+        <input type="text" name="degree" placeholder="degree">
+    </div>
+
+
+    <canvas id="renderCanvas" touch-action="none"></canvas>
+    <!-- touch-action="none" for best results from PEP -->
+
+    <script>
+        const canvas = document.getElementById("renderCanvas"); // Get the canvas element
+        const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+
+        // Add your code here matching the playground format
+        const createScene = function() {
+
+            const scene = new BABYLON.Scene(engine);
+
+            const boxGreen = BABYLON.MeshBuilder.CreateBox("box", {})
+            boxGreen.position = new BABYLON.Vector3(5, 0, 0);
+
+            const boxMatGreen = new BABYLON.StandardMaterial("boxMatGreen");
+            boxMatGreen.diffuseColor = new BABYLON.Color3(0, 1, 0);
+            boxGreen.material = boxMatGreen;
+
+            const boxRed = BABYLON.MeshBuilder.CreateBox("box", {})
+            boxRed.position = new BABYLON.Vector3(0, 0, 5);
+
+            const boxMatRed = new BABYLON.StandardMaterial("boxMatRed");
+            boxMatRed.diffuseColor = new BABYLON.Color3(1, 0, 0);
+            boxRed.material = boxMatRed;
+
+            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(0, 0, 0));
+            camera.attachControl(canvas, true);
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
+
+
+            const degree = 1;
+            const v1 = new BABYLON.Vector3(Math.cos(degree * Math.PI / 180), 0, Math.sin(degree * Math.PI / 180));
+            const v2 = new BABYLON.Vector3(0, 1, 0);
+            const v3 = new BABYLON.Vector3(-Math.sin(degree * Math.PI / 180), 0, Math.cos(degree * Math.PI / 180));
+
+            const callback = function(){
+                let x = BABYLON.Vector3.Dot(v1, boxGreen.position)
+                let y = BABYLON.Vector3.Dot(v2, boxGreen.position)
+                let z = BABYLON.Vector3.Dot(v3, boxGreen.position)
+
+                boxGreen.position.x = x
+                boxGreen.position.y = y
+                boxGreen.position.z = z
+
+                x = BABYLON.Vector3.Dot(v1, boxRed.position)
+                y = BABYLON.Vector3.Dot(v2, boxRed.position)
+                z = BABYLON.Vector3.Dot(v3, boxRed.position)
+
+                boxRed.position.x = x
+                boxRed.position.y = y
+                boxRed.position.z = z
+            }
+
+
+            
+
+            const button = document.getElementById("bigButton");
+            button.addEventListener("click", function(event) {
+                scene.registerBeforeRender(callback);
+                
+            })
+
+            //     let degree = document.querySelector("#inputBox input").value;
+            //     degree = Number(degree)
+
+            //     if (isNaN(degree)) {
+            //         alert("your input is weird!")
+            //     } else if (degree === 0) {
+            //         alert("your input is 0 or you haven't inserted any value! change to another value")
+            //     } else {
+            //         const v1 = new BABYLON.Vector3(Math.cos(degree * Math.PI / 180), 0, Math.sin(degree * Math.PI / 180));
+            //         const v2 = new BABYLON.Vector3(0, 1, 0);
+            //         const v3 = new BABYLON.Vector3(-Math.sin(degree * Math.PI / 180), 0, Math.cos(degree * Math.PI / 180));
+
+            //         let x = BABYLON.Vector3.Dot(v1, boxGreen.position)
+            //         let y = BABYLON.Vector3.Dot(v2, boxGreen.position)
+            //         let z = BABYLON.Vector3.Dot(v3, boxGreen.position)
+
+            //         boxGreen.position.x = x
+            //         boxGreen.position.y = y
+            //         boxGreen.position.z = z
+
+            //         x = BABYLON.Vector3.Dot(v1, boxRed.position)
+            //         y = BABYLON.Vector3.Dot(v2, boxRed.position)
+            //         z = BABYLON.Vector3.Dot(v3, boxRed.position)
+
+            //         boxRed.position.x = x
+            //         boxRed.position.y = y
+            //         boxRed.position.z = z
+            //     }
+
+
+            // })
+
+            // scene.debugLayer.show();
+            // show axis
+            var showAxis = function(size) {
+                var makeTextPlane = function(text, color, size) {
+                    var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
+                    dynamicTexture.hasAlpha = true;
+                    dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
+                    var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
+                    plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
+                    plane.material.backFaceCulling = false;
+                    plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+                    plane.material.diffuseTexture = dynamicTexture;
+                    return plane;
+                };
+
+                var axisX = BABYLON.Mesh.CreateLines("axisX", [
+                    new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
+                    new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+                ], scene);
+                axisX.color = new BABYLON.Color3(1, 0, 0);
+                var xChar = makeTextPlane("X", "red", size / 10);
+                xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+                var axisY = BABYLON.Mesh.CreateLines("axisY", [
+                    new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+                    new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
+                ], scene);
+                axisY.color = new BABYLON.Color3(0, 1, 0);
+                var yChar = makeTextPlane("Y", "green", size / 10);
+                yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+                var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+                    new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
+                    new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
+                ], scene);
+                axisZ.color = new BABYLON.Color3(0, 0, 1);
+                var zChar = makeTextPlane("Z", "blue", size / 10);
+                zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+            };
+
+            showAxis(5);
+
+            return scene;
+        };
+
+        const scene = createScene(); //Call the createScene function
+
+        // Register a render loop to repeatedly render the scene
+        engine.runRenderLoop(function() {
+            scene.render();
+        });
+
+        // Watch for browser/canvas resize events
+        window.addEventListener("resize", function() {
+            engine.resize();
+        });
+    </script>
+
+</body>
+
+</html>

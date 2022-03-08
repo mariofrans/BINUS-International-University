@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bootstrap</title>
+	<!-- Latest compiled and minified CSS --> 
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous"> -->
+
+<link rel="stylesheet" type="text/css" href="">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script> 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script> 
+
+<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+
+<style type="text/css">
+	html, body{
+		height: 100%;
+		margin: 0;
+		text-align: center;
+	}
+	.child{
+		height: 100%;
+	}
+	.parent{
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		padding-bottom: 20px;
+	}
+	.header{
+		background-color: red;
+		height: 75px;
+	}
+	.footer{
+		position: fixed;
+		bottom: 0px;
+		text-align: center;
+	}
+</style>
+</head>
+<body>
+	<div class="container-fluid parent">
+		<div class="container-fluid child">
+			<div class="row header">
+				<div class="col-md-12">HEADER</div>
+			</div>
+			<div class="row">
+
+				<!-- <div class="col-md-3">HOME</div>
+				<div class="col-md-3">ABOUT US</div>
+				<div class="col-md-3">OUR SERVICE</div>
+				<div class="col-md-3">CONTACT US</div> -->
+
+				<ul class="nav justify-content-center nav-custom">
+  					<li class="nav-item">
+   						<a class="nav-link" href="#">Home</a>
+  					</li>
+  					<li class="nav-item">
+    					<a class="nav-link" href="#">About Us</a>
+  					</li>
+  					<li class="nav-item dropdown">
+    					<a class="nav-link dropdown-toggle" href="#">Our Services</a>
+    					<div class="dropdown-menu">
+    						<a class="=dropdown-item"> Service A </a>
+    						<a class="=dropdown-item"> Service B </a>
+    						<a class="=dropdown-item"> Service C </a>
+    					</div>
+  					</li>
+  					<li class="nav-item">
+    					<a class="nav-link" href="#">Contact Us</a>
+  					</li>
+				</ul>
+			</div>
+				<div class="row">
+				<div class="col-md-12">
+					<table class="table-hover">
+						<thead>
+							<tr>
+								<th>No</th>
+								<th>Name</th>
+								<th>Phone Number</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1</td>
+								<td>Name 1</td>
+								<td>081212737828</td>
+							</tr>
+							<tr>
+								<td>2</td>
+								<td>Name 2</td>
+								<td>081617285500</td>
+							</tr>
+						</tbody>
+						
+
+
+					</table>
+
+
+				</div>
+			</div>
+
+
+
+
+		</div>
+		<!-- <footer> FOOTER </footer> -->
+		<div class="footer">
+			FOOTER
+		</div>
+	</div>
+
+</body> 
+</html>

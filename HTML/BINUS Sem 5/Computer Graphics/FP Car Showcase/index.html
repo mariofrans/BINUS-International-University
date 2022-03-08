@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <title>Car Showcase</title>
+
+        <!-- Babylon.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+        <script src="https://preview.babylonjs.com/ammo.js"></script>
+        <script src="https://preview.babylonjs.com/cannon.js"></script>
+        <script src="https://preview.babylonjs.com/Oimo.js"></script>
+        <script src="https://preview.babylonjs.com/earcut.min.js"></script>
+        <script src="https://preview.babylonjs.com/babylon.js"></script>
+        <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+        <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+        <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+        <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+        <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+        <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+
+            #leButton {
+                position: absolute;
+                color: white;
+                font-size: 66px;
+                top: 30%;
+                right: 20%;
+                cursor: pointer;
+            }
+            
+            #leButton:hover {
+                color: black;
+            }
+        </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    </head>
+<body>
+    <div id="leButton">
+        <i class="fas fa-angle-double-right"></i>
+    </div>
+
+    <canvas id="renderCanvas"></canvas>
+    <script>
+        var canvas = document.getElementById("renderCanvas");
+
+        var engine = null;
+        var scene = null;
+        var sceneToRender = null;
+        var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: false}); };
+        // You have to create a function called createScene. This function must return a BABYLON.Scene object
+        // You can reference the following variables: scene, canvas
+        // You must at least define a camera
+        
+        var createScene = function () {
+            const scene = new BABYLON.Scene(this.engine);
+            this.camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / -2, -Math.PI , 80, BABYLON.Vector3(30,15,0), scene);
+            this.camera.attachControl(canvas, true);
+            this.light = new BABYLON.DirectionalLight("dir02", new BABYLON.Vector3(0, -10, -10), scene);
+            this.light.intensity = 1;
+                
+            // var reshM = new BABYLON.StandardMaterial("reshM", scene);
+        	// reshM.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/Hriz256/car/master/src/assets/texture/resh.png", scene);
+        
+            camera.maxZ = 200;
+            var shadowGenerator = new BABYLON.CascadedShadowGenerator(1024, light);
+            shadowGenerator.usePercentageCloserFiltering = true;
+            shadowGenerator.lambda = 0.8;
+        
+            // Playground
+            var ground = BABYLON.Mesh.CreateBox("Ground", 1, scene);
+            ground.scaling = new BABYLON.Vector3(100, 1, 100);
+            ground.position.y = -0.5;
+            ground.checkCollisions = true;
+
+            var layer = new BABYLON.Layer('','https://i.imgur.com/qRpNLlO.jpg', scene, true);
+        
+            const box = BABYLON.MeshBuilder.CreateBox("box", {height: 16, width: 45, depth: 35});
+            box.position = new BABYLON.Vector3(0,20,-7.5)
+            const boxMat = new BABYLON.StandardMaterial("boxMat");
+            boxMat.diffuseColor = new BABYLON.Color3(1, 1, 0.82);
+            box.material = boxMat;
+
+            const box2 = BABYLON.MeshBuilder.CreateBox("box2", {height: 28, width: 15, depth: 40});
+            box2.position = new BABYLON.Vector3(-30,14,-10)
+            const box2Mat = new BABYLON.StandardMaterial("box2Mat");
+            box2Mat.diffuseColor = new BABYLON.Color3(1, 1, 0.82);
+            box2.material = box2Mat;
+
+            const box3 = BABYLON.MeshBuilder.CreateBox("box3", {height: 28, width: 15, depth: 40});
+            box3.position = new BABYLON.Vector3(30,14,-10)
+            const box3Mat = new BABYLON.StandardMaterial("box3Mat");
+            box3Mat.diffuseColor = new BABYLON.Color3(1, 1, 0.82);
+            box3.material = box3Mat;
+
+            const box4 = BABYLON.MeshBuilder.CreateBox("box4", {height: 30, width: 75, depth: 15});
+            box4.position = new BABYLON.Vector3(0,13,-32.5)
+            const box4Mat = new BABYLON.StandardMaterial("box4Mat");
+            box4Mat.diffuseColor = new BABYLON.Color3(1, 1, 0.82);
+            box4.material = box4Mat;
+
+            const cylinder2 = BABYLON.MeshBuilder.CreateCylinder("cylinder2", {height: 1.001, diameter: 45});
+            cylinder2.position = new BABYLON.Vector3(0,-0.5,0)
+            const cylinder2Mat = new BABYLON.StandardMaterial("cylinder2Mat");
+            cylinder2Mat.diffuseColor = new BABYLON.Color3(0.35, 0.35, 0.35);
+            cylinder2.material = cylinder2Mat;
+
+            const cylinder3 = BABYLON.MeshBuilder.CreateCylinder("cylinder3", {height:20, diameter: 45, arc: 0.5, sideOrientation:BABYLON.Mesh.DOUBLESIDE});
+            cylinder3.position = new BABYLON.Vector3(0,10,0)
+            const cylinder3Mat = new BABYLON.StandardMaterial("cylinder3Mat");
+            cylinder3Mat.diffuseColor = new BABYLON.Color3(0, 1, 1);
+            cylinder3.material = cylinder3Mat;
+        
+            var groundMat = new BABYLON.StandardMaterial("groundMat", scene);
+            groundMat.diffuseColor = new BABYLON.Color3(0.85, 0.85, 0.85);
+            groundMat.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            groundMat.backFaceCulling = false;
+            ground.material = groundMat;
+            ground.receiveShadows = true;
+        
+            var car1,car2,car3,car4;
+
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/mariofrans/3D-Car-Models/main/ford-mustang/src/assets/", "car.obj", scene, function (newMeshes) {
+                car1 = new BABYLON.Mesh("car1", scene);
+                car1.position = new BABYLON.Vector3(0, 0, 15);
+                car1.rotation.x = Math.PI / -2;
+                car1.rotation.y = Math.PI / -2;
+                car1.scaling = new BABYLON.Vector3(1, 1, 1).scale(0.1)
+        
+                newMeshes.forEach(i => {
+                    i.parent = car1;
+                    shadowGenerator.getShadowMap().renderList.push(i);
+                });
+          
+            });
+        
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/mariofrans/3D-Car-Models/main/cars/", "BMW850.obj", scene, function (newMeshes) {
+                car2 = new BABYLON.Mesh("car2", scene);
+                car2.position = new BABYLON.Vector3(15, 0.5, 0);
+                car2.rotation.x = 0;
+                car2.rotation.y = 0;
+                car2.scaling = new BABYLON.Vector3(1, 1, 1).scale(0.11)
+        
+                newMeshes.forEach(i => {
+                    i.parent = car2;
+                    shadowGenerator.getShadowMap().renderList.push(i);
+                });
+              
+            });
+        
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/mariofrans/3D-Car-Models/main/cars/", "Z3.obj", scene, function (newMeshes) {
+                car3 = new BABYLON.Mesh("car3", scene);
+                car3.position = new BABYLON.Vector3(-15, 0, 0);
+                car3.rotation.x = 0;
+                car3.rotation.y = -3;
+                car3.scaling = new BABYLON.Vector3(1, 1, 1).scale(0.06)
+        
+                newMeshes.forEach(i => {
+                    i.parent = car3;
+                    shadowGenerator.getShadowMap().renderList.push(i);
+                });
+            
+            });
+        
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/mariofrans/3D-Car-Models/main/cars/", "Toyota.obj", scene, function (newMeshes) {
+                car4 = new BABYLON.Mesh("car4", scene);
+                car4.position = new BABYLON.Vector3(0, 0, -15);
+                car4.rotation.x = 0;
+                car4.rotation.y = -3;
+                car4.scaling = new BABYLON.Vector3(1, 1, 1).scale(0.06)
+                
+                newMeshes.forEach(i => {
+                    i.parent = car4;
+                    shadowGenerator.getShadowMap().renderList.push(i);
+                });
+        
+            });
+        
+            const callback = function () {
+                const degree = 1;
+                const v1 = new BABYLON.Vector3(Math.cos(degree * Math.PI / 180), 0, Math.sin(degree * Math.PI / 180));
+                const v2 = new BABYLON.Vector3(0, 1, 0);
+                const v3 = new BABYLON.Vector3(-Math.sin(degree * Math.PI / 180), 0, Math.cos(degree * Math.PI / 180));
+               
+                let x = BABYLON.Vector3.Dot(v1, car1.position)
+                let y = BABYLON.Vector3.Dot(v2, car1.position)
+                let z = BABYLON.Vector3.Dot(v3, car1.position)
+        
+                car1.position.x = x
+                car1.position.y = y
+                car1.position.z = z
+        
+                x = BABYLON.Vector3.Dot(v1, car2.position)
+                y = BABYLON.Vector3.Dot(v2, car2.position)
+                z = BABYLON.Vector3.Dot(v3, car2.position)
+        
+                car2.position.x = x
+                car2.position.y = y
+                car2.position.z = z
+        
+                x = BABYLON.Vector3.Dot(v1, car3.position)
+                y = BABYLON.Vector3.Dot(v2, car3.position)
+                z = BABYLON.Vector3.Dot(v3, car3.position)
+        
+                car3.position.x = x
+                car3.position.y = y
+                car3.position.z = z
+        
+                x = BABYLON.Vector3.Dot(v1, car4.position)
+                y = BABYLON.Vector3.Dot(v2, car4.position)
+                z = BABYLON.Vector3.Dot(v3, car4.position)
+        
+                car4.position.x = x
+                car4.position.y = y
+                car4.position.z = z
+        
+            }
+        
+            const callback_stop = function(){
+        
+                    const degree = -1;
+                    const v1 = new BABYLON.Vector3(Math.cos(degree * Math.PI / 180), 0, Math.sin(degree * Math.PI / 180));
+                    const v2 = new BABYLON.Vector3(0, 1, 0);
+                    const v3 = new BABYLON.Vector3(-Math.sin(degree * Math.PI / 180), 0, Math.cos(degree * Math.PI / 180));
+        
+                    let x = BABYLON.Vector3.Dot(v1, car1.position)
+                    let y = BABYLON.Vector3.Dot(v2, car1.position)
+                    let z = BABYLON.Vector3.Dot(v3, car1.position)
+        
+                    car1.position.x = x
+                    car1.position.y = y
+                    car1.position.z = z
+        
+                    x = BABYLON.Vector3.Dot(v1, car2.position)
+                    y = BABYLON.Vector3.Dot(v2, car2.position)
+                    z = BABYLON.Vector3.Dot(v3, car2.position)
+        
+                    car2.position.x = x
+                    car2.position.y = y
+                    car2.position.z = z
+        
+                    x = BABYLON.Vector3.Dot(v1, car3.position)
+                    y = BABYLON.Vector3.Dot(v2, car3.position)
+                    z = BABYLON.Vector3.Dot(v3, car3.position)
+        
+                    car3.position.x = x
+                    car3.position.y = y
+                    car3.position.z = z
+        
+                    x = BABYLON.Vector3.Dot(v1, car4.position)
+                    y = BABYLON.Vector3.Dot(v2, car4.position)
+                    z = BABYLON.Vector3.Dot(v3, car4.position)
+        
+                    car4.position.x = x
+                    car4.position.y = y
+                    car4.position.z = z
+        
+                    }
+        
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        
+            var panel = new BABYLON.GUI.StackPanel();
+            panel.width = "220px";
+            panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+            panel.top = -50;
+            advancedTexture.addControl(panel);    
+            
+            const spinning_car = function(){
+
+                if (car1.rotation.y==0){car1.rotation.y += 0.01}
+                if (car2.rotation.y==0){car2.rotation.y += 0.01}
+                if (car3.rotation.y==0){car3.rotation.y += 0.01}
+                if (car4.rotation.y==0){car4.rotation.y += 0.01}
+
+                car1.rotation.y += 1/(car1.rotation.y * 100);
+                car2.rotation.y += 1/(car1.rotation.y * 100);
+                car3.rotation.y += 1/(car1.rotation.y * 100);
+                car4.rotation.y += 1/(car1.rotation.y * 100);
+
+            }
+
+            const button = document.getElementById("leButton");
+
+            button.addEventListener("mousedown", function(event) {
+                scene.registerBeforeRender(spinning_car)
+                scene.registerBeforeRender(callback);
+            })
+
+            button.addEventListener("mouseup", function(event) {
+                scene.registerBeforeRender(callback_stop);
+            })
+            
+            return scene;
+        }
+                window.initFunction = async function() {
+                    
+                    
+                    var asyncEngineCreation = async function() {
+                        try {
+                        return createDefaultEngine();
+                        } catch(e) {
+                        console.log("the available createEngine function failed. Creating the default engine instead");
+                        return createDefaultEngine();
+                        }
+                    }
+
+                    window.engine = await asyncEngineCreation();
+        if (!engine) throw 'engine should not be null.';
+        window.scene = createScene();};
+        initFunction().then(() => {sceneToRender = scene        
+            engine.runRenderLoop(function () {
+                if (sceneToRender && sceneToRender.activeCamera) {
+                    sceneToRender.render();
+                }
+            });
+        });
+
+        // Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>

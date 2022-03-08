@@ -1,0 +1,97 @@
+import java.util.*;
+import java.util.regex.*;
+
+class InfixToPost {
+    static Pattern _pattern = Pattern.compile("^[\\+\\*\\/\\^\\)]|[\\+\\-\\*\\/\\^\\(]$|[^(a-z)(A-Z)\\+\\-\\/\\*\\^\\(\\)]|[a-z]{2,}|[\\+\\*\\/\\^]{2,}|\\-\\-\\-+|\\([\\+\\*\\/\\^]|[\\+\\-\\*\\/\\^]\\)|[a-z]\\(|\\)[a-z]+");
+    public static String[] getInput() {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            int n = Integer.parseInt(scanner.nextLine());
+            if (n < 1 || n > 1000) return new String[0];
+
+            String[] inputs = new String[n];
+            for (int i = 0; i < n; i++) {
+                inputs[i] = scanner.nextLine();
+            }
+
+            return inputs;
+        } catch (Exception e) {
+            return new String[0];
+        }
+    }
+
+    public static int getPrecedence(char character) {
+        if (character == '^') {
+            return 3;
+        } else if (character == '*' || character == '/') {
+            return 2;
+        } else if (character == '+' || character == '-') {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+    public static String infixToPostfix(String infix) {
+        infix = infix.replaceAll("\\s+", "");
+        int length = infix.length();
+        if (_pattern.matcher(infix).find()) return "Invalid Expression";
+        if (length < 1 || length > 1000) return "Invalid Expression";
+
+        Stack<Character> stack = new Stack<Character>();
+        StringBuilder postfix = new StringBuilder();
+
+        try {
+            for (int i = 0; i < length; i++) {
+                char currentChar = infix.charAt(i);
+                if (Character.isLetter(currentChar)) {
+                    postfix.append(currentChar);
+                } else if (currentChar ==  '(') {
+                    stack.push(currentChar);
+                } else if (currentChar == ')') {
+                    while (!stack.isEmpty() && stack.peek() != '(') {
+                        postfix.append(stack.peek());
+                        stack.pop();
+                    }
+
+                    if (stack.isEmpty() && stack.peek() != '(') return "Invalid Expression";
+                    else stack.pop();
+                } else {
+                    while (!stack.isEmpty() && getPrecedence(currentChar) <= getPrecedence(stack.peek())) {
+                        postfix.append(stack.peek());
+                        stack.pop();
+                    }
+
+                    stack.push(currentChar);
+                }
+            }
+
+            while (!stack.isEmpty()) {
+                if (stack.peek() == '(') return "Invalid Expression";
+                postfix.append(stack.peek());
+                stack.pop();
+            }
+
+            return postfix.toString();
+        } catch (Exception e) {
+            return "Invalid Expression";
+        }
+    }
+
+    public static void main(String[] args) {
+        String[] listOfInfix = getInput();
+        if (listOfInfix.length > 0) {
+            ArrayList<String> listOfPostfix = new ArrayList<String>();
+            for (String infix : listOfInfix) {
+                String postfix = infixToPostfix(infix);
+                if (!postfix.isEmpty()) {
+                    listOfPostfix.add(postfix);
+                }
+            }
+
+            for (String postfix : listOfPostfix) {
+                System.out.println(postfix);
+            }
+        }
+    }
+}
