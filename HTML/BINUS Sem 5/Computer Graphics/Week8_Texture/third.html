@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>Babylon.js sample code</title>
+    <!-- Babylon.js -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+
+    <style>
+        html,
+        body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script type="application/vertexShader" id="vertexShaderCode">
+        // Attributes
+        attribute vec3 position;
+
+        // Uniforms
+        uniform mat4 worldViewProjection;
+
+        uniform float scale;
+        
+        // Normal
+
+        void main(void) {
+            gl_Position = worldViewProjection * vec4(position * scale, 1.0);
+            //myColor = my_color;
+        }
+    </script>
+
+    <script type="application/fragmentShader" id="fragmentShaderCode">
+        uniform vec3 my_color;
+
+
+        void main(void) {
+        gl_FragColor = vec4(my_color,1.);
+        }
+    </script>
+
+    <script>
+        if (BABYLON.Engine.isSupported()) {
+            var canvas = document.getElementById("renderCanvas");
+            var engine = new BABYLON.Engine(canvas, true);
+
+            var createScene = function() {
+                var scene = new BABYLON.Scene(engine);
+
+                var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 4, Math.PI / 4, 2, BABYLON.Vector3.Zero(), scene);
+
+                camera.attachControl(canvas, true);
+
+                
+                
+                var shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, {
+                    vertexElement: "vertexShaderCode",
+                    fragmentElement: "fragmentShaderCode",
+                }, {
+                    attributes: ["position", "normal", "uv"],
+                    uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
+                });
+
+                shaderMaterial.setVector3("my_color", new BABYLON.Vector3(0,1,0));
+                shaderMaterial.setFloat("scale", 0.5);
+
+                var mainTexture = new BABYLON.Texture("amiga.jpg", scene);
+
+                shaderMaterial.setTexture("textureSampler", mainTexture);
+
+                shaderMaterial.backFaceCulling = false;
+
+                var box = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
+                box.material = shaderMaterial;
+
+                return scene;
+            }
+
+
+            var scene = createScene();
+
+            engine.runRenderLoop(function() {
+
+                scene.render();
+            });
+
+            window.addEventListener("resize", function() {
+                engine.resize();
+            });
+        }
+    </script>
+</body>
+
+</html>
